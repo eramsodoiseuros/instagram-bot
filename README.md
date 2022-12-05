@@ -3,3 +3,13 @@
 The bot will track the followers of the Instagram user specified by the `YOUR_USERNAME` variable.
 To get the user's ID, it makes a `GET request to the https://www.instagram.com/{username}/?__a=1 endpoint`, where `username` is the username of the user you want to track. The `response` to this request contains the user's ID, which is then used to make a request to the `followers endpoint` to get the list of followers.
 The followers are printed and returned by the track_followers() method.
+
+# Code rundown
+
+This code defines a `InstagramBot` class that can be used to log in to an Instagram account and retrieve the list of followers for a given user. The `__init__()` method is used to initialize the class with the `username` and `password` for the Instagram account, as well as some instance variables to store the `user's ID`, `csrftoken`, and `session ID`.
+
+The `login()` method is used to log in to the Instagram account by making a request to the login page and extracting the `user's ID`, `csrftoken`, and `session ID` from the response. This information is then used to make a `POST request` to the `login endpoint` to log in to the account.
+
+The `track_followers()` method is used to retrieve the list of followers for a given user by making a `GET request` to the `followers endpoint`. This method takes the user's ID as an argument, and it returns the list of followers as a list.
+
+The code also provides an example of how to use the `InstagramBot` class to log in to an Instagram account, retrieve the user's ID, and get the list of followers for that user. This example uses the requests module to make `HTTP requests` to the `Instagram API`, and it uses the json module to parse the response data.
