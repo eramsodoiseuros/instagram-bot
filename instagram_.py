@@ -5,6 +5,73 @@ import sys
 class InstagramBot:
     def __init__(self, api_key: str):
         self.api_key = api_key
+        self.access_token = None
+        self.user_id = None
+        self.csrftoken = None
+        self.session_id = None
+
+    def login(self, username: str, password: str):
+        response = requests.post('https://www.instagram.com/accounts/login/ajax/', json={
+            'username': username,
+            'password': password
+        })
+
+        if response.status_code == 200:
+            self.user_id = response.cookies['ds_user_id']
+            self.session_id = response.cookies['sessionid']
+            self.csrftoken = response.headers['csrftoken']
+        else:
+            print('Login failed')
+
+    def authenticate(self, username: str, password: str):
+        endpoint = "https://www.instagram.com/accounts/login/ajax/"
+        headers = {
+            "referer": "https://www.instagram.com/",
+            "x-csrftoken": self.csrftoken,
+            "x-instagram-ajax": "1",
+            "x-requested-with": "XMLHttpRequest",
+        }
+        payload = {
+            "username": username,
+            "password": password,
+            "api_key": self.api_key,
+        }
+        response = requests.post(endpoint, headers=headers, data=payload)
+
+        if response.status_code == 200:
+            self.access_token = response.json()["access_token"]
+            self.user_id = response.json()["user_id"]
+            self.csrftoken = response.cookies["csrftoken"]
+            self.session_id = response.cookies["sessionid"]
+            return True
+        else:
+            return False
+
+    def follow(self, username: str):
+        user_id = self.get_user_id(username)
+
+        response = requests.post(f'https://www.instagram.com/web/friendships/{user_id}/follow/', headers={
+            'x-csrftoken': self.csrftoken,
+            'x-requested-with': 'XMLHttpRequest'
+        })
+
+        if response.status_code == 200:
+            print(f'Followed {username}')
+        else:
+            print('Follow failed')
+
+    def unfollow(self, username: str):
+        user_id = self.get_user_id(username)
+
+        response = requests.post(f'https://www.instagram.com/web/friendships/{user_id}/unfollow/', headers={
+            'x-csrftoken': self.csrftoken,
+            'x-requested-with': 'XMLHttpRequest'
+        })
+
+        if response.status_code == 200:
+            print(f'Unfollowed {username}')
+        else:
+            print('Unfollow failed')
 
     def get_user_id(self, username: str):
         response = requests.get(f"https://api.instagram.com/v1/users/search?q={username}&access_token={self.api_key}")
@@ -119,6 +186,44 @@ class InstagramBot:
             print(non_follower)
 
         return non_followers
+
+    def like(self, media_item_id: str):
+        endpoint = f"https://api.instagram.com/v1/media/{media_item_id}/likes"
+        headers = {
+            "referer": f"https://www.instagram.com/p/{media_item_id}/",
+            "x-csrftoken": self.csrftoken,
+            "x-instagram-ajax": "1",
+            "x-requested-with": "XMLHttpRequest",
+        }
+        payload = {
+            "access_token": self.access_token,
+            "user_id": self.user_id,
+        }
+        response = requests.post(endpoint, headers=headers, data=payload)
+
+        if response.status_code == 200:
+            return True
+        else:
+            return False
+
+    def unlike(self, media_item_id: str):
+        endpoint = f"https://api.instagram.com/v1/media/{media_item_id}/likes"
+        headers = {
+            "referer": f"https://www.instagram.com/p/{media_item_id}/",
+            "x-csrftoken": self.csrftoken,
+            "x-instagram-ajax": "1",
+            "x-requested-with": "XMLHttpRequest",
+        }
+        payload = {
+            "access_token": self.access_token,
+            "user_id": self.user_id,
+        }
+        response = requests.delete(endpoint, headers=headers, data=payload)
+
+        if response.status_code == 200:
+            return True
+        else:
+            return False
 
 
 api_key_ = ""
