@@ -1,10 +1,13 @@
-# Instagram Bot to track Followers
+# Instagram Bot
 
-The bot will track the followers of the Instagram user specified by the `YOUR_USERNAME` variable.
+**Tracking Followers**
+
+The bot will track the followers of the Instagram user specified by the arguments given to the program.
+
 To get the user's ID, it makes a `GET request to the https://www.instagram.com/{username}/?__a=1 endpoint`, where `username` is the username of the user you want to track. The `response` to this request contains the user's ID, which is then used to make a request to the `followers endpoint` to get the list of followers.
 The followers are printed and returned by the track_followers() method.
 
-# Code rundown
+# Code rundown for instagram.py
 
 This code defines a `InstagramBot` class that can be used to log in to an Instagram account and retrieve the list of followers for a given user. The `__init__()` method is used to initialize the class with the `username` and `password` for the Instagram account, as well as some instance variables to store the `user's ID`, `csrftoken`, and `session ID`.
 
